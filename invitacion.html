@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Valentín 💖</title>
+
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffe6eb;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.container {
+    position: relative;
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    color: #e6005c;
+    margin-bottom: 15px;
+}
+
+.message {
+    min-height: 22px;
+    color: #999;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.buttons {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+button {
+    padding: 12px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-si {
+    background-color: #ff4d88;
+    color: white;
+}
+
+.btn-no {
+    background-color: #ccc;
+    color: #333;
+}
+
+/* Temblor */
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+}
+
+/* Movimiento */
+.move {
+    transform: translate(var(--x), var(--y));
+}
+
+/* Corazones */
+.heart {
+    position: fixed;
+    bottom: -20px;
+    font-size: 20px;
+    animation: float 4s linear forwards;
+    opacity: 0.8;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .buttons {
+        flex-direction: column;
+    }
+    button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Oye preciosota, ¿Quieres ser mi San Valentín? 💘</h1>
+    <div class="message" id="message"></div>
+
+    <div class="buttons">
+        <button class="btn-si" id="btnSi">Sí</button>
+        <button class="btn-no" id="btnNo">No</button>
+    </div>
+</div>
+
+<script>
+const btnNo = document.getElementById('btnNo');
+const btnSi = document.getElementById('btnSi');
+const message = document.getElementById('message');
+
+let clicks = 0;
+const messages = [
+    "¿Estás segura? 🤔",
+    "Piénsalo bien 👀",
+    "Te ganarás un pollo pepé 🍗",
+    "También unos cheetos fleimin hot🍟",
+    "Última oportunidad 😏"
+];
+
+btnNo.addEventListener('click', () => {
+    clicks++;
+
+    // Desde el 5to click en adelante → celebración
+    if (clicks >= 6) {
+        message.textContent = "¡Sabía que aceptarías! 💕✨";
+        createHearts();
+        return;
+    }
+
+    // Temblor siempre hasta que se rinda
+    btnNo.classList.add('shake');
+    setTimeout(() => btnNo.classList.remove('shake'), 300);
+
+    // Clicks 1–3: huye
+    if (clicks <= 4) {
+    message.textContent = messages[clicks - 1];
+
+    const container = document.querySelector('.container'); // Contenedor real
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+
+    const btnWidth = btnNo.offsetWidth;
+    const btnHeight = btnNo.offsetHeight;
+
+    // Rango seguro para moverse dentro del contenedor
+    const maxX = containerWidth - btnWidth - 20; // 20px margen
+    const maxY = containerHeight - btnHeight - 20;
+
+    // Posición aleatoria dentro del rango
+    const x = Math.floor(Math.random() * maxX - maxX/2) + 'px';
+    const y = Math.floor(Math.random() * maxY - maxY/2) + 'px';
+
+    btnNo.style.setProperty('--x', x);
+    btnNo.style.setProperty('--y', y);
+    btnNo.classList.add('move');
+
+
+
+    if (clicks === 4) {
+    // Quitamos la animación
+    btnNo.style.transition = 'none';
+
+    // Regresamos al centro
+    btnNo.style.setProperty('--x', '0px');
+    btnNo.style.setProperty('--y', '0px');
+
+    // Forzamos reflow para que tome el cambio inmediato
+    btnNo.offsetHeight; 
+
+    // Restauramos la transición
+    btnNo.style.transition = 'all 0.3s ease';
+    }
+}
+
+
+    // Click 4: se convierte en Sí
+    if (clicks === 5) {
+        resetButtonPosition(btnNo); // volvemos al centro
+        btnNo.textContent = 'Sí';
+        btnNo.className = 'btn-si';
+        message.textContent = "Sabía que dirías que sí 💖";
+    }
+});
+
+btnSi.addEventListener('click', () => {
+    resetButtonPosition(btnNo); // volvemos al centro
+    message.textContent = "¡Sabía que aceptarías! 💕✨";
+    createHearts();
+});
+
+function createHearts() {
+    for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '💖';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 4000);
+    }
+}
+
+function resetButtonPosition(button) {
+    // Quitamos la animación temporalmente
+    button.style.transition = 'none';
+
+    // Volvemos al centro
+    button.style.setProperty('--x', '0px');
+    button.style.setProperty('--y', '0px');
+
+    // Forzamos reflow para que tome el cambio inmediato
+    button.offsetHeight;
+
+    // Restauramos la transición
+    button.style.transition = 'all 0.3s ease';
+}
+
+</script>
+
+
+</body>
+</html>
